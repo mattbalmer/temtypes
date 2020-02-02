@@ -43,6 +43,7 @@ gulp.task('static:node_modules', recipe('copy', {
 gulp.task('inject', recipe('html', {
   cwd: path.resolve(process.cwd(), 'dist'),
   input: './source/html/**/*.html',
+  addRootSlash: false,
   sources: [[
     '!vendor/node_modules.js',
     '!vendor/react.development.js',

@@ -21,7 +21,7 @@ module.exports = (config) => {
     
     return stream
       .pipe(inject(series.apply(series, streams), {
-        addRootSlash: true
+        addRootSlash: config.hasOwnProperty('addRootSlash') ? config.addRootSlash : true,
       }))
       .pipe(gulp.dest(config.output));
   }
