@@ -200,6 +200,68 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 
 /***/ }),
 
+/***/ "./node_modules/classnames/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/classnames/index.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+  Copyright (c) 2017 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg) && arg.length) {
+				var inner = classNames.apply(null, arg);
+				if (inner) {
+					classes.push(inner);
+				}
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if ( true && module.exports) {
+		classNames.default = classNames;
+		module.exports = classNames;
+	} else if (true) {
+		// register as 'classnames', consistent with npm package name
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+			return classNames;
+		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+}());
+
+
+/***/ }),
+
 /***/ "./node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js":
 /*!**********************************************************************************!*\
   !*** ./node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js ***!
@@ -3562,11 +3624,224 @@ exports.ReduxActions = {
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 const react_1 = __webpack_require__(/*! @lib/utils/react */ "./lib/@lib/utils/react.ts");
+const TypeChartComponent_1 = __webpack_require__(/*! @client/components/display/TypeChartComponent */ "./source/js/components/display/TypeChartComponent.tsx");
 exports.AppComponent = react_1.containerize(class extends React.Component {
     render() {
-        return (React.createElement("div", null, "Hello World"));
+        return (React.createElement(TypeChartComponent_1.TypeChartComponent, null));
     }
 });
+
+
+/***/ }),
+
+/***/ "./source/js/components/display/TypeChartComponent.tsx":
+/*!*************************************************************!*\
+  !*** ./source/js/components/display/TypeChartComponent.tsx ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+var TYPE;
+(function (TYPE) {
+    TYPE["NORMAL"] = "NORMAL";
+    TYPE["FIRE"] = "FIRE";
+    TYPE["WATER"] = "WATER";
+    TYPE["NATURE"] = "NATURE";
+    TYPE["ELECTRIC"] = "ELECTRIC";
+    TYPE["EARTH"] = "EARTH";
+    TYPE["MENTAL"] = "MENTAL";
+    TYPE["WIND"] = "WIND";
+    TYPE["DIGITAL"] = "DIGITAL";
+    TYPE["MELEE"] = "MELEE";
+    TYPE["CRYSTAL"] = "CRYSTAL";
+    TYPE["TOXIC"] = "TOXIC";
+})(TYPE || (TYPE = {}));
+;
+const TYPTE_LIST = [
+    'NORMAL',
+    'FIRE',
+    'WATER',
+    'NATURE',
+    'ELECTRIC',
+    'EARTH',
+    'MENTAL',
+    'WIND',
+    'DIGITAL',
+    'MELEE',
+    'CRYSTAL',
+    'TOXIC',
+];
+const EFFECTIVENESS = {
+    [TYPE.NORMAL]: {
+        [TYPE.MENTAL]: 0.5,
+    },
+    [TYPE.FIRE]: {
+        [TYPE.FIRE]: 0.5,
+        [TYPE.WATER]: 0.5,
+        [TYPE.NATURE]: 2,
+        [TYPE.EARTH]: 0.5,
+        [TYPE.CRYSTAL]: 2,
+    },
+    [TYPE.WATER]: {
+        [TYPE.FIRE]: 2,
+        [TYPE.WATER]: .5,
+        [TYPE.NATURE]: .5,
+        [TYPE.EARTH]: 2,
+        [TYPE.DIGITAL]: 2,
+        [TYPE.TOXIC]: .5,
+    },
+    [TYPE.NATURE]: {
+        [TYPE.FIRE]: .5,
+        [TYPE.WATER]: 2,
+        [TYPE.NATURE]: .5,
+        [TYPE.EARTH]: 2,
+        [TYPE.TOXIC]: .5,
+    },
+    [TYPE.ELECTRIC]: {
+        [TYPE.WATER]: 2,
+        [TYPE.NATURE]: .5,
+        [TYPE.ELECTRIC]: .5,
+        [TYPE.EARTH]: .5,
+        [TYPE.MENTAL]: 2,
+        [TYPE.WIND]: 2,
+        [TYPE.DIGITAL]: 2,
+        [TYPE.CRYSTAL]: .5,
+    },
+    [TYPE.EARTH]: {
+        [TYPE.FIRE]: 2,
+        [TYPE.ELECTRIC]: 2,
+        [TYPE.CRYSTAL]: 2,
+        [TYPE.WATER]: .5,
+        [TYPE.NATURE]: .5,
+        [TYPE.WIND]: .5,
+    },
+    [TYPE.MENTAL]: {
+        [TYPE.NORMAL]: 2,
+        [TYPE.MELEE]: 2,
+        [TYPE.CRYSTAL]: .5,
+    },
+    [TYPE.WIND]: {
+        [TYPE.EARTH]: 2,
+        [TYPE.TOXIC]: 2,
+        [TYPE.ELECTRIC]: .5,
+        [TYPE.WIND]: .5,
+    },
+    [TYPE.DIGITAL]: {
+        [TYPE.MENTAL]: 2,
+        [TYPE.DIGITAL]: 2,
+        [TYPE.MELEE]: 2,
+    },
+    [TYPE.MELEE]: {
+        [TYPE.EARTH]: 2,
+        [TYPE.CRYSTAL]: 2,
+        [TYPE.MENTAL]: .5,
+        [TYPE.MELEE]: .5,
+    },
+    [TYPE.CRYSTAL]: {
+        [TYPE.MENTAL]: 2,
+        [TYPE.ELECTRIC]: 2,
+        [TYPE.FIRE]: .5,
+        [TYPE.EARTH]: .5,
+    },
+    [TYPE.TOXIC]: {
+        [TYPE.WATER]: 2,
+        [TYPE.NATURE]: 2,
+        [TYPE.EARTH]: .5,
+        [TYPE.DIGITAL]: .5,
+        [TYPE.CRYSTAL]: .5,
+        [TYPE.TOXIC]: .5,
+    },
+};
+const TypeChartRow = ({ type, selectedTypes }) => {
+    const finalEffectiveness = selectedTypes.reduce((effectiveness, selectedType) => {
+        return effectiveness * (EFFECTIVENESS[type][selectedType] || 1);
+    }, 1);
+    return React.createElement("div", { className: "typechart__row" },
+        React.createElement("span", { className: classnames_1.default({
+                'typechart__heading-cell': true,
+                [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
+            }) }, finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                'typechart__badge': true,
+                'typechart__badge--super-effective': finalEffectiveness > 1,
+                'typechart__badge--not-very-effective': finalEffectiveness < 1,
+            }) },
+            finalEffectiveness,
+            "x") : null),
+        TYPTE_LIST.map(opposingType => {
+            const effectiveness = EFFECTIVENESS[type] && EFFECTIVENESS[type][opposingType] ? EFFECTIVENESS[type][opposingType] : 1;
+            const dimmed = selectedTypes.length > 0 && (!selectedTypes.includes(opposingType));
+            return React.createElement("span", { className: classnames_1.default({
+                    typechart__cell: true,
+                    'typechart__cell--super-effective': effectiveness === 2,
+                    'typechart__cell--not-very-effective': effectiveness === 0.5,
+                    'typechart__cell--extra-super-effective': effectiveness === 4,
+                    'typechart__cell--extra-not-very-effective': effectiveness === 0.25,
+                    'typechart__cell--dimmed': dimmed,
+                }), key: opposingType, "data-row-type": type, "data-col-type": opposingType },
+                effectiveness,
+                "x");
+        }),
+        React.createElement("div", { className: classnames_1.default({
+                'typechart__joint-cell': true,
+                'typechart__heading-cell--dimmed': selectedTypes.length === 0
+            }) },
+            React.createElement("span", { className: classnames_1.default({
+                    'typechart__heading-cell': true,
+                    [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                    'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
+                }) },
+                finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                        'typechart__badge': true,
+                        'typechart__badge--super-effective': finalEffectiveness > 1,
+                        'typechart__badge--not-very-effective': finalEffectiveness < 1,
+                    }) },
+                    finalEffectiveness,
+                    "x") : null,
+                type),
+            React.createElement("span", { className: classnames_1.default({
+                    'typechart__cell': true,
+                    'typechart__cell--super-effective': finalEffectiveness === 2,
+                    'typechart__cell--not-very-effective': finalEffectiveness === .5,
+                    'typechart__cell--extra-super-effective': finalEffectiveness === 4,
+                    'typechart__cell--extra-not-very-effective': finalEffectiveness === 0.25,
+                }) }, selectedTypes.length > 0
+                ? `${finalEffectiveness}x`
+                : null)));
+};
+exports.TypeChartComponent = () => {
+    const [selectedTypes, setSelectedTypes] = React.useState([]);
+    return React.createElement("div", { className: "typechart-container" },
+        React.createElement("span", { className: "typechart__horizontal-label" }, "Defending Type"),
+        React.createElement("div", { className: "typechart__horizontal-row-container" },
+            React.createElement("span", { className: "typechart__vertical-label" }, "Attacking Type"),
+            React.createElement("div", { className: classnames_1.default({
+                    typechart: true,
+                    'typechart--has-selected-types': selectedTypes.length > 0,
+                }) },
+                React.createElement("div", { className: "typechart__row" },
+                    React.createElement("span", { className: "typechart__empty-cell" }),
+                    TYPTE_LIST.map(type => React.createElement("span", { key: type, className: classnames_1.default({
+                            'typechart__heading-cell': true,
+                            [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                        }), onClick: () => {
+                            if (selectedTypes.includes(type)) {
+                                setSelectedTypes(selectedTypes.filter(_ => _ !== type));
+                            }
+                            else if (selectedTypes.length < 2) {
+                                setSelectedTypes([...selectedTypes, type]);
+                            }
+                        } })),
+                    React.createElement("div", { className: 'typechart__joint-cell' },
+                        React.createElement("span", { className: "typechart__empty-cell" }),
+                        React.createElement("span", { className: "typechart__empty-cell" }))),
+                React.createElement("div", null, TYPTE_LIST.map(type => React.createElement(TypeChartRow, { key: type, type: type, selectedTypes: selectedTypes }))))));
+};
 
 
 /***/ }),
