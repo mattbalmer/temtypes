@@ -1,25 +1,29 @@
 import * as React from 'react';
 import { containerize } from '@lib/utils/react';
-import { TypeChartComponent } from '@client/components/display/TypeChartComponent';
+import { MultiTemtemTypeChartComponent } from '@client/components/display/MultiTemtemTypeChartComponent';
 import { TemtemTypeaheadComponent } from '@client/components/display/TemtemTypeaheadComponent';
 
-export const AppComponent = containerize(class extends React.Component<any, any> {
+export const AppComponent = containerize(class extends React.Component<any, {
+  selectedTemtems: any[],
+}> {
   constructor(props) {
     super(props);
     
     this.state = {
-      selectedTemtem: null,
+      selectedTemtems: [],
     };
   }
   
   onSelectTemtem = (selectedTemtem) => {
-    this.setState({
-      selectedTemtem,
-    });
+    if (this.state.selectedTemtems.length < 2 && !this.state.selectedTemtems.some(_ => _.number === selectedTemtem.number)) {
+      this.setState({
+        selectedTemtems: [...this.state.selectedTemtems, selectedTemtem],
+      });
+    }
   };
   
   render() {
-    const { selectedTemtem } = this.state;
+    const { selectedTemtems } = this.state;
 
     return (
       <React.Fragment>
@@ -27,18 +31,25 @@ export const AppComponent = containerize(class extends React.Component<any, any>
           onTemtemSelect={this.onSelectTemtem}
         />
 
-        <TypeChartComponent
+        <MultiTemtemTypeChartComponent
           allowUserSelection={true}
-          types={selectedTemtem ? selectedTemtem.types : []}
+          selectedTemtems={selectedTemtems}
           onReset={this.onReset}
+          removeTemtem={this.removeTemtem}
         />
       </React.Fragment>
     );
   }
 
+  removeTemtem = (temtem) => {
+    this.setState({
+      selectedTemtems: this.state.selectedTemtems.filter(_ => _.number !== temtem.number),
+    });
+  };
+
   onReset = () => {
     this.setState({
-      selectedTemtem: null,
+      selectedTemtems: [],
     });
   };
 

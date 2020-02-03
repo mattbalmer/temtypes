@@ -9,8 +9,13 @@ const returnValidTemtems = (temtems, query) => {
 
   query = query.toUpperCase();
 
-  return temtems
-    .filter(temtem => temtem.name.toUpperCase().includes(query) || temtem.types.some(type => type.includes(query)));
+  const matchedNamed = temtems
+    .filter(temtem => temtem.name.toUpperCase().includes(query));
+
+  const matchedType = temtems
+    .filter(temtem => temtem.types.some(type => type.includes(query)));
+
+  return [...matchedNamed, ...matchedType];
 };
 
 export class TemtemTypeaheadComponent extends React.Component<{
@@ -126,6 +131,7 @@ export class TemtemTypeaheadComponent extends React.Component<{
               ref={this.inputRef}
               onFocus={this.onFocus}
               onBlur={this.onBlur}
+              placeholder={"Search for Temtem here!"}
             />
             {query ?
               <div className="typeahead__suggestions">

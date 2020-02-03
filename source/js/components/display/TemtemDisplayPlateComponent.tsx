@@ -18,4 +18,4 @@ export const TemtemDisplayPlateComponent = ({ temtem, onClick, selected }) => {
       </div>
     </div>
   </div>
-}
+};

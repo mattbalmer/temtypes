@@ -3624,19 +3624,26 @@ exports.ReduxActions = {
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 const react_1 = __webpack_require__(/*! @lib/utils/react */ "./lib/@lib/utils/react.ts");
-const TypeChartComponent_1 = __webpack_require__(/*! @client/components/display/TypeChartComponent */ "./source/js/components/display/TypeChartComponent.tsx");
+const MultiTemtemTypeChartComponent_1 = __webpack_require__(/*! @client/components/display/MultiTemtemTypeChartComponent */ "./source/js/components/display/MultiTemtemTypeChartComponent.tsx");
 const TemtemTypeaheadComponent_1 = __webpack_require__(/*! @client/components/display/TemtemTypeaheadComponent */ "./source/js/components/display/TemtemTypeaheadComponent.tsx");
 exports.AppComponent = react_1.containerize(class extends React.Component {
     constructor(props) {
         super(props);
         this.onSelectTemtem = (selectedTemtem) => {
+            if (this.state.selectedTemtems.length < 2 && !this.state.selectedTemtems.some(_ => _.number === selectedTemtem.number)) {
+                this.setState({
+                    selectedTemtems: [...this.state.selectedTemtems, selectedTemtem],
+                });
+            }
+        };
+        this.removeTemtem = (temtem) => {
             this.setState({
-                selectedTemtem,
+                selectedTemtems: this.state.selectedTemtems.filter(_ => _.number !== temtem.number),
             });
         };
         this.onReset = () => {
             this.setState({
-                selectedTemtem: null,
+                selectedTemtems: [],
             });
         };
         this.onUnfocusedKeyDown = (e) => {
@@ -3647,14 +3654,14 @@ exports.AppComponent = react_1.containerize(class extends React.Component {
             }
         };
         this.state = {
-            selectedTemtem: null,
+            selectedTemtems: [],
         };
     }
     render() {
-        const { selectedTemtem } = this.state;
+        const { selectedTemtems } = this.state;
         return (React.createElement(React.Fragment, null,
             React.createElement(TemtemTypeaheadComponent_1.TemtemTypeaheadComponent, { onTemtemSelect: this.onSelectTemtem }),
-            React.createElement(TypeChartComponent_1.TypeChartComponent, { allowUserSelection: true, types: selectedTemtem ? selectedTemtem.types : [], onReset: this.onReset })));
+            React.createElement(MultiTemtemTypeChartComponent_1.MultiTemtemTypeChartComponent, { allowUserSelection: true, selectedTemtems: selectedTemtems, onReset: this.onReset, removeTemtem: this.removeTemtem })));
     }
     componentDidMount() {
         window.addEventListener('keydown', this.onUnfocusedKeyDown);
@@ -3667,159 +3674,10 @@ exports.AppComponent = react_1.containerize(class extends React.Component {
 
 /***/ }),
 
-/***/ "./source/js/components/display/TemtemDisplayPlateComponent.tsx":
-/*!**********************************************************************!*\
-  !*** ./source/js/components/display/TemtemDisplayPlateComponent.tsx ***!
-  \**********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "react");
-const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-exports.TemtemDisplayPlateComponent = ({ temtem, onClick, selected }) => {
-    return React.createElement("div", { className: classnames_1.default({
-            "temtem-display-plate": true,
-            "temtem-display-plate--is-selected": selected,
-        }), onClick: onClick ? () => onClick(temtem) : () => { } },
-        React.createElement("div", { className: "temtem-display-plate__portrait-wrapper" },
-            React.createElement("img", { className: "temtem-display-plate__portrait", src: temtem.portraitWikiUrl })),
-        React.createElement("div", { className: "temtem-display-plate__info" },
-            React.createElement("div", { className: "temtem-display-plate__name" }, temtem.name),
-            React.createElement("div", { className: "temtem-display-plate__types" }, temtem.types.map(type => React.createElement("span", { key: type, className: `temtem-display-plate__type u-type-badge--${type.toLowerCase()}` }, type)))));
-};
-
-
-/***/ }),
-
-/***/ "./source/js/components/display/TemtemTypeaheadComponent.tsx":
-/*!*******************************************************************!*\
-  !*** ./source/js/components/display/TemtemTypeaheadComponent.tsx ***!
-  \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "react");
-const temtems_1 = __webpack_require__(/*! @client/data/temtems */ "./source/js/data/temtems.ts");
-const TemtemDisplayPlateComponent_1 = __webpack_require__(/*! @client/components/display/TemtemDisplayPlateComponent */ "./source/js/components/display/TemtemDisplayPlateComponent.tsx");
-const returnValidTemtems = (temtems, query) => {
-    if (!query) {
-        return [];
-    }
-    query = query.toUpperCase();
-    return temtems
-        .filter(temtem => temtem.name.toUpperCase().includes(query) || temtem.types.some(type => type.includes(query)));
-};
-class TemtemTypeaheadComponent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onSubmit = (e) => {
-            e.preventDefault();
-        };
-        this.onSelect = (temtem) => {
-            this.props.onTemtemSelect(temtem);
-            this.setState({
-                query: '',
-                suggestions: returnValidTemtems(temtems_1.default, ''),
-                selection: -1,
-            });
-        };
-        this.onInputChange = (e) => {
-            const query = e.target.value;
-            this.setState({
-                query,
-                suggestions: returnValidTemtems(temtems_1.default, query),
-            });
-        };
-        this.onFocusedKeyDown = (e) => {
-            if (e.key === 'Escape') {
-                this.setState({
-                    query: '',
-                    selection: -1,
-                    suggestions: returnValidTemtems(temtems_1.default, ''),
-                });
-                this.inputRef.current.blur();
-            }
-            if (e.key === 'ArrowUp') {
-                this.setState({
-                    selection: Math.max(-1, this.state.selection - 1),
-                });
-            }
-            if (e.key === 'ArrowDown') {
-                this.setState({
-                    selection: Math.min(this.state.suggestions.length - 1, this.state.selection + 1),
-                });
-            }
-            if (e.key === 'Enter' && this.state.selection > -1) {
-                this.onSelect(this.state.suggestions[this.state.selection]);
-            }
-        };
-        this.onUnfocusedKeyDown = (e) => {
-            if (e.key === 'Enter') {
-                this.inputRef.current.focus();
-            }
-            if (e.key === 'Escape') {
-                this.setState({
-                    query: '',
-                    selection: -1,
-                    suggestions: returnValidTemtems(temtems_1.default, ''),
-                });
-            }
-        };
-        this.onFocus = () => {
-            window.addEventListener('keydown', this.onFocusedKeyDown);
-            window.removeEventListener('keydown', this.onUnfocusedKeyDown);
-        };
-        this.onBlur = () => {
-            window.removeEventListener('keydown', this.onFocusedKeyDown);
-            window.addEventListener('keydown', this.onUnfocusedKeyDown);
-        };
-        this.state = {
-            query: '',
-            selection: -1,
-            suggestions: [],
-        };
-    }
-    componentDidMount() {
-        window.addEventListener('keydown', this.onUnfocusedKeyDown);
-    }
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.onUnfocusedKeyDown);
-    }
-    render() {
-        this.inputRef = React.createRef();
-        const { query, selection } = this.state;
-        const suggestions = returnValidTemtems(temtems_1.default, query);
-        console.log('render', query, selection);
-        return (React.createElement("div", { className: "typeahead" },
-            React.createElement("form", { onSubmit: this.onSubmit },
-                React.createElement("div", { className: "typeahead__input-wrapper" },
-                    React.createElement("input", { type: "text", onChange: this.onInputChange, value: query, ref: this.inputRef, onFocus: this.onFocus, onBlur: this.onBlur }),
-                    query ?
-                        React.createElement("div", { className: "typeahead__suggestions" },
-                            suggestions.slice(0, 5).map((temtem, i) => React.createElement(TemtemDisplayPlateComponent_1.TemtemDisplayPlateComponent, { key: temtem.number, temtem: temtem, onClick: this.onSelect, selected: i === selection })),
-                            suggestions.length === 0 ? React.createElement("span", null, "No temtem found") : null,
-                            suggestions.length > 5 ? React.createElement("span", null,
-                                "+ ",
-                                suggestions.length - 5,
-                                " more!") : null)
-                        : null))));
-    }
-}
-exports.TemtemTypeaheadComponent = TemtemTypeaheadComponent;
-
-
-/***/ }),
-
-/***/ "./source/js/components/display/TypeChartComponent.tsx":
-/*!*************************************************************!*\
-  !*** ./source/js/components/display/TypeChartComponent.tsx ***!
-  \*************************************************************/
+/***/ "./source/js/components/display/MultiTemtemTypeChartComponent.tsx":
+/*!************************************************************************!*\
+  !*** ./source/js/components/display/MultiTemtemTypeChartComponent.tsx ***!
+  \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3829,6 +3687,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 const ResetIcon_1 = __webpack_require__(/*! @client/components/icons/ResetIcon */ "./source/js/components/icons/ResetIcon.tsx");
+const TemtemColumnHeader_1 = __webpack_require__(/*! @client/components/display/TemtemColumnHeader */ "./source/js/components/display/TemtemColumnHeader.tsx");
 var TYPE;
 (function (TYPE) {
     TYPE["NORMAL"] = "NORMAL";
@@ -3939,22 +3798,15 @@ const EFFECTIVENESS = {
         [TYPE.TOXIC]: .5,
     },
 };
-const TypeChartRow = ({ type, selectedTypes }) => {
-    const finalEffectiveness = selectedTypes.reduce((effectiveness, selectedType) => {
-        return effectiveness * (EFFECTIVENESS[type][selectedType] || 1);
-    }, 1);
+const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
+    const finalEffectiveness1 = selectedTemtems[0] ? selectedTemtems[0].types.reduce((effectiveness, temtemType) => effectiveness * (EFFECTIVENESS[type][temtemType] || 1), 1) : 1;
+    const finalEffectiveness2 = selectedTemtems[1] ? selectedTemtems[1].types.reduce((effectiveness, temtemType) => effectiveness * (EFFECTIVENESS[type][temtemType] || 1), 1) : 1;
     return React.createElement("div", { className: "typechart__row" },
         React.createElement("span", { className: classnames_1.default({
                 'typechart__heading-cell': true,
                 [`u-type-bgicon--${type.toLowerCase()}`]: true,
-                'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
-            }) }, finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
-                'typechart__badge': true,
-                'typechart__badge--super-effective': finalEffectiveness > 1,
-                'typechart__badge--not-very-effective': finalEffectiveness < 1,
-            }) },
-            finalEffectiveness,
-            "x") : null),
+                'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness1 === 1 && finalEffectiveness2 === 1))
+            }) }),
         TYPTE_LIST.map(opposingType => {
             const effectiveness = EFFECTIVENESS[type] && EFFECTIVENESS[type][opposingType] ? EFFECTIVENESS[type][opposingType] : 1;
             const dimmed = selectedTypes.length > 0 && (!selectedTypes.includes(opposingType));
@@ -3976,31 +3828,58 @@ const TypeChartRow = ({ type, selectedTypes }) => {
             React.createElement("span", { className: classnames_1.default({
                     'typechart__heading-cell': true,
                     [`u-type-bgicon--${type.toLowerCase()}`]: true,
-                    'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
-                }) }, finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                    'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectiveness1 === 1)
+                }) }, finalEffectiveness1 !== 1 && false ? React.createElement("span", { className: classnames_1.default({
                     'typechart__badge': true,
-                    'typechart__badge--super-effective': finalEffectiveness > 1,
-                    'typechart__badge--not-very-effective': finalEffectiveness < 1,
+                    'typechart__badge--super-effective': finalEffectiveness1 > 1,
+                    'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
                 }) },
-                finalEffectiveness,
+                finalEffectiveness1,
                 "x") : null),
             React.createElement("span", { className: classnames_1.default({
                     'typechart__cell': true,
-                    'typechart__cell--super-effective': finalEffectiveness === 2,
-                    'typechart__cell--not-very-effective': finalEffectiveness === .5,
-                    'typechart__cell--extra-super-effective': finalEffectiveness === 4,
-                    'typechart__cell--extra-not-very-effective': finalEffectiveness === 0.25,
+                    'typechart__cell--super-effective': finalEffectiveness1 === 2,
+                    'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
+                    'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
+                    'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
                 }) }, selectedTypes.length > 0
-                ? `${finalEffectiveness}x`
-                : null)));
+                ? `${finalEffectiveness1}x`
+                : null)),
+        selectedTemtems[1] ?
+            React.createElement("div", { className: classnames_1.default({
+                    'typechart__joint-cell': true,
+                    'typechart__heading-cell--dimmed': selectedTypes.length === 0
+                }) },
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__heading-cell': true,
+                        [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                        'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness2 === 1))
+                    }) }, finalEffectiveness2 !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                        'typechart__badge': true,
+                        'typechart__badge--super-effective': finalEffectiveness2 > 1,
+                        'typechart__badge--not-very-effective': finalEffectiveness2 < 1,
+                    }) },
+                    finalEffectiveness2,
+                    "x") : null),
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__cell': true,
+                        'typechart__cell--super-effective': finalEffectiveness2 === 2,
+                        'typechart__cell--not-very-effective': finalEffectiveness2 === .5,
+                        'typechart__cell--extra-super-effective': finalEffectiveness2 === 4,
+                        'typechart__cell--extra-not-very-effective': finalEffectiveness2 === 0.25,
+                    }) },
+                    finalEffectiveness2,
+                    "x"))
+            : null);
 };
-exports.TypeChartComponent = ({ allowUserSelection, types, onReset }) => {
+exports.MultiTemtemTypeChartComponent = ({ allowUserSelection, selectedTemtems, onReset, removeTemtem }) => {
+    const types = selectedTemtems.reduce((types, temtem) => [...types, ...temtem.types], []);
     const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
         ? React.useState(types)
         : [types, (...args) => { }];
     React.useEffect(() => {
-        setSelectedTypes(types);
-    }, [types]);
+        setSelectedTypes(selectedTemtems.reduce((types, temtem) => [...types, ...temtem.types], []));
+    }, [selectedTemtems]);
     return React.createElement("div", { className: "typechart-container" },
         React.createElement("span", { className: "typechart__horizontal-label" }, "Defending Type"),
         React.createElement("div", { className: "typechart__horizontal-row-container" },
@@ -4017,18 +3896,205 @@ exports.TypeChartComponent = ({ allowUserSelection, types, onReset }) => {
                             'typechart__heading-cell': true,
                             [`u-type-bgicon--${type.toLowerCase()}`]: true,
                         }), onClick: () => {
-                            if (selectedTypes.includes(type)) {
-                                setSelectedTypes(selectedTypes.filter(_ => _ !== type));
+                            if (selectedTemtems.length > 0) {
+                                onReset();
                             }
-                            else if (selectedTypes.length < 2) {
-                                setSelectedTypes([...selectedTypes, type]);
+                            else {
+                                if (selectedTypes.includes(type)) {
+                                    setSelectedTypes(selectedTypes.filter(_ => _ !== type));
+                                }
+                                else if (selectedTypes.length < 2) {
+                                    setSelectedTypes([...selectedTypes, type]);
+                                }
                             }
                         } })),
                     React.createElement("div", { className: 'typechart__joint-cell' },
-                        React.createElement("span", { className: "typechart__empty-cell" }),
-                        React.createElement("span", { className: "typechart__empty-cell" }))),
-                React.createElement("div", null, TYPTE_LIST.map(type => React.createElement(TypeChartRow, { key: type, type: type, selectedTypes: selectedTypes }))))));
+                        React.createElement("span", { className: "typechart__empty-cell--double" }, selectedTemtems[0]
+                            ? React.createElement(TemtemColumnHeader_1.TemtemColumnHeader, { temtem: selectedTemtems[0], onClick: () => removeTemtem(selectedTemtems[0]) })
+                            : null)),
+                    selectedTemtems[1] ?
+                        React.createElement("div", { className: 'typechart__joint-cell' },
+                            React.createElement("span", { className: "typechart__empty-cell--double" }, selectedTemtems[1]
+                                ? React.createElement(TemtemColumnHeader_1.TemtemColumnHeader, { temtem: selectedTemtems[1], onClick: () => removeTemtem(selectedTemtems[1]) })
+                                : null))
+                        : null),
+                React.createElement("div", null, TYPTE_LIST.map(type => React.createElement(TypeChartRow, { key: type, type: type, selectedTemtems: selectedTemtems, selectedTypes: selectedTypes }))))));
 };
+
+
+/***/ }),
+
+/***/ "./source/js/components/display/TemtemColumnHeader.tsx":
+/*!*************************************************************!*\
+  !*** ./source/js/components/display/TemtemColumnHeader.tsx ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+exports.TemtemColumnHeader = ({ temtem, onClick }) => {
+    return React.createElement("div", { className: classnames_1.default({
+            "temtem-column-header": true,
+        }) },
+        React.createElement("div", { className: "temtem-column-header__portrait-wrapper", onClick: onClick },
+            React.createElement("img", { className: "temtem-column-header__portrait", src: temtem.portraitWikiUrl, alt: temtem.name })));
+};
+
+
+/***/ }),
+
+/***/ "./source/js/components/display/TemtemDisplayPlateComponent.tsx":
+/*!**********************************************************************!*\
+  !*** ./source/js/components/display/TemtemDisplayPlateComponent.tsx ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+exports.TemtemDisplayPlateComponent = ({ temtem, onClick, selected }) => {
+    return React.createElement("div", { className: classnames_1.default({
+            "temtem-display-plate": true,
+            "temtem-display-plate--is-selected": selected,
+        }), onClick: onClick ? () => onClick(temtem) : () => { } },
+        React.createElement("div", { className: "temtem-display-plate__portrait-wrapper" },
+            React.createElement("img", { className: "temtem-display-plate__portrait", src: temtem.portraitWikiUrl })),
+        React.createElement("div", { className: "temtem-display-plate__info" },
+            React.createElement("div", { className: "temtem-display-plate__name" }, temtem.name),
+            React.createElement("div", { className: "temtem-display-plate__types" }, temtem.types.map(type => React.createElement("span", { key: type, className: `temtem-display-plate__type u-type-badge--${type.toLowerCase()}` }, type)))));
+};
+
+
+/***/ }),
+
+/***/ "./source/js/components/display/TemtemTypeaheadComponent.tsx":
+/*!*******************************************************************!*\
+  !*** ./source/js/components/display/TemtemTypeaheadComponent.tsx ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const temtems_1 = __webpack_require__(/*! @client/data/temtems */ "./source/js/data/temtems.ts");
+const TemtemDisplayPlateComponent_1 = __webpack_require__(/*! @client/components/display/TemtemDisplayPlateComponent */ "./source/js/components/display/TemtemDisplayPlateComponent.tsx");
+const returnValidTemtems = (temtems, query) => {
+    if (!query) {
+        return [];
+    }
+    query = query.toUpperCase();
+    const matchedNamed = temtems
+        .filter(temtem => temtem.name.toUpperCase().includes(query));
+    const matchedType = temtems
+        .filter(temtem => temtem.types.some(type => type.includes(query)));
+    return [...matchedNamed, ...matchedType];
+};
+class TemtemTypeaheadComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onSubmit = (e) => {
+            e.preventDefault();
+        };
+        this.onSelect = (temtem) => {
+            this.props.onTemtemSelect(temtem);
+            this.setState({
+                query: '',
+                suggestions: returnValidTemtems(temtems_1.default, ''),
+                selection: -1,
+            });
+        };
+        this.onInputChange = (e) => {
+            const query = e.target.value;
+            this.setState({
+                query,
+                suggestions: returnValidTemtems(temtems_1.default, query),
+            });
+        };
+        this.onFocusedKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                this.setState({
+                    query: '',
+                    selection: -1,
+                    suggestions: returnValidTemtems(temtems_1.default, ''),
+                });
+                this.inputRef.current.blur();
+            }
+            if (e.key === 'ArrowUp') {
+                this.setState({
+                    selection: Math.max(-1, this.state.selection - 1),
+                });
+            }
+            if (e.key === 'ArrowDown') {
+                this.setState({
+                    selection: Math.min(this.state.suggestions.length - 1, this.state.selection + 1),
+                });
+            }
+            if (e.key === 'Enter' && this.state.selection > -1) {
+                this.onSelect(this.state.suggestions[this.state.selection]);
+            }
+        };
+        this.onUnfocusedKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                this.inputRef.current.focus();
+            }
+            if (e.key === 'Escape') {
+                this.setState({
+                    query: '',
+                    selection: -1,
+                    suggestions: returnValidTemtems(temtems_1.default, ''),
+                });
+            }
+        };
+        this.onFocus = () => {
+            window.addEventListener('keydown', this.onFocusedKeyDown);
+            window.removeEventListener('keydown', this.onUnfocusedKeyDown);
+        };
+        this.onBlur = () => {
+            window.removeEventListener('keydown', this.onFocusedKeyDown);
+            window.addEventListener('keydown', this.onUnfocusedKeyDown);
+        };
+        this.state = {
+            query: '',
+            selection: -1,
+            suggestions: [],
+        };
+    }
+    componentDidMount() {
+        window.addEventListener('keydown', this.onUnfocusedKeyDown);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.onUnfocusedKeyDown);
+    }
+    render() {
+        this.inputRef = React.createRef();
+        const { query, selection } = this.state;
+        const suggestions = returnValidTemtems(temtems_1.default, query);
+        console.log('render', query, selection);
+        return (React.createElement("div", { className: "typeahead" },
+            React.createElement("form", { onSubmit: this.onSubmit },
+                React.createElement("div", { className: "typeahead__input-wrapper" },
+                    React.createElement("input", { type: "text", onChange: this.onInputChange, value: query, ref: this.inputRef, onFocus: this.onFocus, onBlur: this.onBlur, placeholder: "Search for Temtem here!" }),
+                    query ?
+                        React.createElement("div", { className: "typeahead__suggestions" },
+                            suggestions.slice(0, 5).map((temtem, i) => React.createElement(TemtemDisplayPlateComponent_1.TemtemDisplayPlateComponent, { key: temtem.number, temtem: temtem, onClick: this.onSelect, selected: i === selection })),
+                            suggestions.length === 0 ? React.createElement("span", null, "No temtem found") : null,
+                            suggestions.length > 5 ? React.createElement("span", null,
+                                "+ ",
+                                suggestions.length - 5,
+                                " more!") : null)
+                        : null))));
+    }
+}
+exports.TemtemTypeaheadComponent = TemtemTypeaheadComponent;
 
 
 /***/ }),

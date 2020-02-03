@@ -85,7 +85,16 @@
     display flex
     align-items center
     justify-content center
-    
+
+  &__empty-cell--double
+    height 46px
+    width 98px
+    margin 3px
+    position relative
+    display flex
+    align-items center
+    justify-content center
+
   &__heading-cell
     height 46px
     width 46px
@@ -157,6 +166,10 @@
     span:last-child
       margin-left 0
       width 52px
+
+      &.typechart__empty-cell--double
+        width 98px
+        margin 3px
       
   &__horizontal-row-container
     position relative

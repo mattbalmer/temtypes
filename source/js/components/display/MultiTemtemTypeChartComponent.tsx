@@ -127,23 +127,21 @@ const EFFECTIVENESS = {
 };
 
 
-const TypeChartRow = ({ type, selectedTypes }) => {
-  const finalEffectiveness = selectedTypes.reduce((effectiveness, selectedType) => {
-    return effectiveness * (EFFECTIVENESS[type][selectedType] || 1);
-  }, 1);
-  
+const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
+  const finalEffectiveness1 = selectedTemtems[0] ? selectedTemtems[0].types.reduce((effectiveness, temtemType) =>
+      effectiveness * (EFFECTIVENESS[type][temtemType] || 1)
+  , 1) : 1;
+  const finalEffectiveness2 = selectedTemtems[1] ? selectedTemtems[1].types.reduce((effectiveness, temtemType) =>
+    effectiveness * (EFFECTIVENESS[type][temtemType] || 1)
+    , 1) : 1;
+
   return <div className="typechart__row">
   
     <span className={classnames({
         'typechart__heading-cell': true,
         [`u-type-bgicon--${type.toLowerCase()}`]: true,
-        'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
+        'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness1 === 1 && finalEffectiveness2 === 1))
       })}>
-      {finalEffectiveness !== 1 && false ? <span className={classnames({
-        'typechart__badge': true,
-        'typechart__badge--super-effective': finalEffectiveness > 1,
-        'typechart__badge--not-very-effective': finalEffectiveness < 1,
-      })}>{finalEffectiveness}x</span> : null}
     </span>
     {TYPTE_LIST.map(opposingType => { 
       const effectiveness = EFFECTIVENESS[type] && EFFECTIVENESS[type][opposingType] ? EFFECTIVENESS[type][opposingType] : 1;
@@ -172,31 +170,58 @@ const TypeChartRow = ({ type, selectedTypes }) => {
       <span className={classnames({
           'typechart__heading-cell': true,
           [`u-type-bgicon--${type.toLowerCase()}`]: true,
-          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
+          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectiveness1 === 1)
         })}>
-        {finalEffectiveness !== 1 && false ? <span className={classnames({
+        {finalEffectiveness1 !== 1 && false ? <span className={classnames({
           'typechart__badge': true,
-          'typechart__badge--super-effective': finalEffectiveness > 1,
-          'typechart__badge--not-very-effective': finalEffectiveness < 1,
-        })}>{finalEffectiveness}x</span> : null}
+          'typechart__badge--super-effective': finalEffectiveness1 > 1,
+          'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
+        })}>{finalEffectiveness1}x</span> : null}
       </span>
       <span className={classnames({
         'typechart__cell': true,
-        'typechart__cell--super-effective': finalEffectiveness === 2,
-        'typechart__cell--not-very-effective': finalEffectiveness === .5,
-        'typechart__cell--extra-super-effective': finalEffectiveness === 4,
-        'typechart__cell--extra-not-very-effective': finalEffectiveness === 0.25,
+        'typechart__cell--super-effective': finalEffectiveness1 === 2,
+        'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
+        'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
+        'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
       })}>
         {selectedTypes.length > 0
-          ? `${finalEffectiveness}x`
+          ? `${finalEffectiveness1}x`
           : null
         }
       </span>
     </div>
+    {selectedTemtems[1] ?
+      <div className={classnames({
+        'typechart__joint-cell': true,
+        'typechart__heading-cell--dimmed': selectedTypes.length === 0
+      })}>
+        <span className={classnames({
+          'typechart__heading-cell': true,
+          [`u-type-bgicon--${type.toLowerCase()}`]: true,
+          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness2 === 1))
+        })}>
+          {finalEffectiveness2 !== 1 && false ? <span className={classnames({
+            'typechart__badge': true,
+            'typechart__badge--super-effective': finalEffectiveness2 > 1,
+            'typechart__badge--not-very-effective': finalEffectiveness2 < 1,
+          })}>{finalEffectiveness2}x</span> : null}
+        </span>
+        <span className={classnames({
+          'typechart__cell': true,
+          'typechart__cell--super-effective': finalEffectiveness2 === 2,
+          'typechart__cell--not-very-effective': finalEffectiveness2 === .5,
+          'typechart__cell--extra-super-effective': finalEffectiveness2 === 4,
+          'typechart__cell--extra-not-very-effective': finalEffectiveness2 === 0.25,
+        })}>
+          {finalEffectiveness2}x
+        </span>
+      </div>
+    : null}
   </div>
 };
 
-export const TypeChartComponent = ({ allowUserSelection, selectedTemtems, onReset, removeTemtem }) => {
+export const MultiTemtemTypeChartComponent = ({ allowUserSelection, selectedTemtems, onReset, removeTemtem }) => {
   const types = selectedTemtems.reduce((types, temtem) => [...types, ...temtem.types], []);
   const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
     ? React.useState(types)
@@ -270,7 +295,7 @@ export const TypeChartComponent = ({ allowUserSelection, selectedTemtems, onRese
           : null}
         </div>
         <div>
-          {TYPTE_LIST.map(type => <TypeChartRow key={type} type={type} selectedTypes={selectedTypes} />)}
+          {TYPTE_LIST.map(type => <TypeChartRow key={type} type={type} selectedTemtems={selectedTemtems} selectedTypes={selectedTypes} />)}
         </div>
       </div>
     </div>
