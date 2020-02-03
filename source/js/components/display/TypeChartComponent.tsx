@@ -195,8 +195,10 @@ const TypeChartRow = ({ type, selectedTypes }) => {
   </div>
 }
 
-export const TypeChartComponent = () => {
-  const [selectedTypes, setSelectedTypes] = React.useState([]);
+export const TypeChartComponent = ({ allowUserSelection, types }) => {
+  const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
+    ? React.useState([])
+    : [types, (...args) => {}];
 
   return <div className="typechart-container">
     <span className="typechart__horizontal-label">Defending Type</span>

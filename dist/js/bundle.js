@@ -3625,11 +3625,59 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 const react_1 = __webpack_require__(/*! @lib/utils/react */ "./lib/@lib/utils/react.ts");
 const TypeChartComponent_1 = __webpack_require__(/*! @client/components/display/TypeChartComponent */ "./source/js/components/display/TypeChartComponent.tsx");
+const TemtemTypeaheadComponent_1 = __webpack_require__(/*! @client/components/display/TemtemTypeaheadComponent */ "./source/js/components/display/TemtemTypeaheadComponent.tsx");
 exports.AppComponent = react_1.containerize(class extends React.Component {
     render() {
-        return (React.createElement(TypeChartComponent_1.TypeChartComponent, null));
+        return (React.createElement(React.Fragment, null,
+            React.createElement(TemtemTypeaheadComponent_1.TemtemTypeaheadComponent, null),
+            React.createElement(TypeChartComponent_1.TypeChartComponent, { allowUserSelection: true, types: [] })));
     }
 });
+
+
+/***/ }),
+
+/***/ "./source/js/components/display/TemtemTypeaheadComponent.tsx":
+/*!*******************************************************************!*\
+  !*** ./source/js/components/display/TemtemTypeaheadComponent.tsx ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const temtems_1 = __webpack_require__(/*! @client/temtems */ "./source/js/temtems.ts");
+const returnValidTemtems = (temtems, query) => {
+    if (!query) {
+        return [];
+    }
+    return temtems.filter();
+};
+exports.TemtemDisplayPlate = ({ temtem }) => {
+    return React.createElement("div", { className: "temtem-display-plate" },
+        React.createElement("div", { className: "temtem-display-plate__portrait-wrapper" },
+            React.createElement("img", { className: "temtem-display-plate__portrait", src: temtem.portraitWikiUrl })),
+        React.createElement("div", { className: "temtem-display-plate__info" },
+            React.createElement("div", { className: "temtem-display-plate__name" }, temtem.name),
+            React.createElement("div", { className: "temtem-display-plate__types" }, temtem.types.map(type => React.createElement("span", { key: type, className: `temtem-display-plate__type u-type-badge--${type.toLowerCase()}` }, type)))));
+};
+exports.TemtemTypeaheadComponent = () => {
+    const inputRef = React.createRef();
+    const [query, updateQuery] = React.useState('');
+    const suggestions = returnValidTemtems(temtems_1.default, query);
+    const onSubmit = (e) => {
+        e.preventDefault();
+    };
+    return (React.createElement("div", { className: "typeahead" },
+        React.createElement("form", { onSubmit: onSubmit },
+            React.createElement("div", { className: "typeahead__input-wrapper" },
+                React.createElement("input", { type: "text", onChange: (e) => updateQuery(e.target.value), value: query }),
+                query ?
+                    React.createElement("div", { className: "typeahead__suggestions" }, temtems_1.default.slice(0, 3).map(_ => React.createElement(exports.TemtemDisplayPlate, { key: _.number, temtem: _ })))
+                    : null))));
+};
 
 
 /***/ }),
@@ -3814,8 +3862,10 @@ const TypeChartRow = ({ type, selectedTypes }) => {
                 ? `${finalEffectiveness}x`
                 : null)));
 };
-exports.TypeChartComponent = () => {
-    const [selectedTypes, setSelectedTypes] = React.useState([]);
+exports.TypeChartComponent = ({ allowUserSelection, types }) => {
+    const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
+        ? React.useState([])
+        : [types, (...args) => { }];
     return React.createElement("div", { className: "typechart-container" },
         React.createElement("span", { className: "typechart__horizontal-label" }, "Defending Type"),
         React.createElement("div", { className: "typechart__horizontal-row-container" },
@@ -3956,6 +4006,17 @@ const redux_logger_1 = __webpack_require__(/*! redux-logger */ "./node_modules/r
 const reducers_1 = __webpack_require__(/*! @client/reducers */ "./source/js/reducers/index.ts");
 exports.store = redux_1.createStore(reducers_1.default, redux_1.applyMiddleware(redux_thunk_1.default, redux_logger_1.createLogger()));
 
+
+/***/ }),
+
+/***/ "./source/js/temtems.ts":
+/*!******************************!*\
+  !*** ./source/js/temtems.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+throw new Error("Module build failed (from ./node_modules/awesome-typescript-loader/dist/entry.js):\nError: ENOENT: no such file or directory, open '/home/ec2-user/environment/source/js/temtems.ts'");
 
 /***/ }),
 
