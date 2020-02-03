@@ -256,6 +256,54 @@ ul {
   background-position: center center;
   color: transparent;
 }
+.u-type-badge--normal {
+  background: #a1acae;
+  color: #2a2a2a;
+}
+.u-type-badge--fire {
+  background: #fb8a6d;
+  color: #2a2a2a;
+}
+.u-type-badge--water {
+  background: #7cdcf2;
+  color: #2a2a2a;
+}
+.u-type-badge--nature {
+  background: #a0e899;
+  color: #2a2a2a;
+}
+.u-type-badge--electric {
+  background: #f2de7c;
+  color: #2a2a2a;
+}
+.u-type-badge--earth {
+  background: #bf8b6e;
+  color: #2a2a2a;
+}
+.u-type-badge--mental {
+  background: #eb9ddb;
+  color: #2a2a2a;
+}
+.u-type-badge--wind {
+  background: #7bdfdb;
+  color: #2a2a2a;
+}
+.u-type-badge--digital {
+  background: #83a5a8;
+  color: #2a2a2a;
+}
+.u-type-badge--melee {
+  background: #f7b583;
+  color: #2a2a2a;
+}
+.u-type-badge--crystal {
+  background: #e95571;
+  color: #2a2a2a;
+}
+.u-type-badge--toxic {
+  background: #4a4a4a;
+  color: #eee;
+}
 .u-flex {
   display: flex;
 }
@@ -421,4 +469,69 @@ ul {
 /* Rotate from top left corner (not default) */
   transform-origin: 0 0;
   transform: rotate(-90deg) translateX(-50%);
+}
+.typeahead input {
+  border-radius: 3px;
+  outline: none;
+  border: 2px solid #2a2a2a;
+  padding: 3px 6px;
+  font-size: 16px;
+  line-height: 1;
+}
+.typeahead .typeahead__input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.typeahead .typeahead__suggestions {
+  position: absolute;
+  top: 28px;
+  width: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #2a2a2a;
+  z-index: 51;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.temtem-display-plate {
+  display: flex;
+  flex-direction: row;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 3px 0;
+  margin-bottom: 5px;
+}
+.temtem-display-plate:last-child {
+  margin-bottom: 0;
+}
+.temtem-display-plate:hover {
+  background: #ccc;
+}
+.temtem-display-plate__portrait-wrapper {
+  width: 50px;
+  height: 50px;
+  background-image: url("../temtem-portrait-background.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.temtem-display-plate__portrait {
+  width: 90%;
+  height: 90%;
+  clip-path: polygon(51% 5%, 88% 28%, 89% 73%, 50% 92%, 14% 72%, 12% 29%);
+}
+.temtem-display-plate__name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+.temtem-display-plate__type {
+  border-radius: 3px;
+  padding: 2px 4px;
+  line-height: 1;
+  margin-right: 5px;
 }
