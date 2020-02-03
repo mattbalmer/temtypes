@@ -195,8 +195,14 @@ const TypeChartRow = ({ type, selectedTypes }) => {
   </div>
 }
 
-export const TypeChartComponent = () => {
-  const [selectedTypes, setSelectedTypes] = React.useState([]);
+export const TypeChartComponent = ({ allowUserSelection, types }) => {
+  const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
+    ? React.useState(types)
+    : [types, (...args) => {}];
+    
+  React.useEffect(() => {
+    setSelectedTypes(types);
+  }, [types]);
 
   return <div className="typechart-container">
     <span className="typechart__horizontal-label">Defending Type</span>
@@ -216,6 +222,7 @@ export const TypeChartComponent = () => {
                 [`u-type-bgicon--${type.toLowerCase()}`]: true,
               })}
               onClick={() => {
+                console.log('cloick', type);
                 if(selectedTypes.includes(type)) {
                   setSelectedTypes(selectedTypes.filter(_ => _ !== type))
                 } else if(selectedTypes.length < 2) {

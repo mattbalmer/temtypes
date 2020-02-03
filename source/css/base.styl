@@ -13,6 +13,12 @@ body
 span, li, ul
   display inline-block
 
+$border-color = #2a2a2a
+$super-effective-green = #b0d490
+$extra-super-effective-green = #b0d490 //saturate($super-effective-green, 25)
+$not-very-effective-red = #f4675c
+$extra-not-very-effective-red = #f4675c //saturate($not-very-effective-red, 25)
+
 $type-colors = {
   normal: #a1acae,
   fire: #fb8a6d,
@@ -28,11 +34,20 @@ $type-colors = {
   toxic: #4a4a4a
 }
 
-$border-color = #2a2a2a
-$super-effective-green = #b0d490
-$extra-super-effective-green = #b0d490 //saturate($super-effective-green, 25)
-$not-very-effective-red = #f4675c
-$extra-not-very-effective-red = #f4675c //saturate($not-very-effective-red, 25)
+$type-alternate-colors = {
+  normal: $border-color,
+  fire: $border-color,
+  water: $border-color,
+  nature: $border-color,
+  electric: $border-color,
+  earth: $border-color,
+  mental: $border-color,
+  wind: $border-color,
+  digital: $border-color,
+  melee: $border-color
+  crystal: $border-color,
+  toxic: #eee
+}
 
 for type, color in $type-colors
   .u-type-bgcolor--{type}
@@ -45,6 +60,11 @@ for type, color in $type-colors
     background-repeat no-repeat
     background-position center center
     color transparent
+    
+for type, color in $type-colors
+  .u-type-badge--{type}
+    background color
+    color $type-alternate-colors[type]
     
 .u-flex
   display flex
