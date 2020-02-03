@@ -310,6 +310,27 @@ ul {
 .u-flex--row {
   flex-direction: row;
 }
+.temtem-column-header {
+  display: flex;
+  flex-direction: row;
+}
+.temtem-column-header__portrait-wrapper {
+  width: 50px;
+  height: 50px;
+  background-image: url("../temtem-portrait-background.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.temtem-column-header__portrait {
+  width: 90%;
+  height: 90%;
+  clip-path: polygon(51% 5%, 88% 28%, 89% 73%, 50% 92%, 14% 72%, 12% 29%);
+}
 .typechart-container {
   display: inline-flex;
   flex-direction: column;
@@ -382,6 +403,15 @@ ul {
   align-items: center;
   justify-content: center;
 }
+.typechart__empty-cell--double {
+  height: 46px;
+  width: 98px;
+  margin: 3px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .typechart__heading-cell {
   height: 46px;
   width: 46px;
@@ -446,6 +476,10 @@ ul {
   margin-left: 0;
   width: 52px;
 }
+.typechart__joint-cell span:last-child.typechart__empty-cell--double {
+  width: 98px;
+  margin: 3px;
+}
 .typechart__horizontal-row-container {
   position: relative;
   background: #2a2a2a;
@@ -476,8 +510,8 @@ ul {
 .typeahead {
   position: absolute;
   z-index: 20;
-  top: 5px;
-  left: 5px;
+  top: 8px;
+  left: 8px;
 }
 .typeahead input {
   border-radius: 3px;
