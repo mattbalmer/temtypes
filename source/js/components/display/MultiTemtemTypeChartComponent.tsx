@@ -128,6 +128,9 @@ const EFFECTIVENESS = {
 
 
 const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
+  const finalEffectivenessCombined = selectedTypes.reduce((effectiveness, selectedType) => {
+    return effectiveness * (EFFECTIVENESS[type][selectedType] || 1);
+  }, 1);
   const finalEffectiveness1 = selectedTemtems[0] ? selectedTemtems[0].types.reduce((effectiveness, temtemType) =>
       effectiveness * (EFFECTIVENESS[type][temtemType] || 1)
   , 1) : 1;
@@ -163,34 +166,63 @@ const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
         {effectiveness}x
       </span>
     })}
-    <div className={classnames({
-      'typechart__joint-cell': true,
-      'typechart__heading-cell--dimmed': selectedTypes.length === 0
-    })}>
-      <span className={classnames({
+    {selectedTemtems.length === 0 ?
+      <div className={classnames({
+        'typechart__joint-cell': true,
+        'typechart__heading-cell--dimmed': selectedTypes.length === 0
+      })}>
+        <span className={classnames({
           'typechart__heading-cell': true,
           [`u-type-bgicon--${type.toLowerCase()}`]: true,
-          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectiveness1 === 1)
+          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectivenessCombined === 1)
         })}>
-        {finalEffectiveness1 !== 1 && false ? <span className={classnames({
-          'typechart__badge': true,
-          'typechart__badge--super-effective': finalEffectiveness1 > 1,
-          'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
-        })}>{finalEffectiveness1}x</span> : null}
-      </span>
-      <span className={classnames({
-        'typechart__cell': true,
-        'typechart__cell--super-effective': finalEffectiveness1 === 2,
-        'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
-        'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
-        'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
+          {finalEffectivenessCombined !== 1 && false ? <span className={classnames({
+            'typechart__badge': true,
+            'typechart__badge--super-effective': finalEffectivenessCombined > 1,
+            'typechart__badge--not-very-effective': finalEffectivenessCombined < 1,
+          })}>{finalEffectivenessCombined}x</span> : null}
+        </span>
+        <span className={classnames({
+          'typechart__cell': true,
+          'typechart__cell--super-effective': finalEffectivenessCombined === 2,
+          'typechart__cell--not-very-effective': finalEffectivenessCombined === .5,
+          'typechart__cell--extra-super-effective': finalEffectivenessCombined === 4,
+          'typechart__cell--extra-not-very-effective': finalEffectivenessCombined === 0.25,
+        })}>
+          {selectedTypes.length > 0
+            ? `${finalEffectivenessCombined}x`
+            : null
+          }
+        </span>
+      </div>
+      : null}
+    {selectedTemtems[0] ?
+      <div className={classnames({
+        'typechart__joint-cell': true,
+        'typechart__heading-cell--dimmed': selectedTypes.length === 0
       })}>
-        {selectedTypes.length > 0
-          ? `${finalEffectiveness1}x`
-          : null
-        }
-      </span>
-    </div>
+        <span className={classnames({
+          'typechart__heading-cell': true,
+          [`u-type-bgicon--${type.toLowerCase()}`]: true,
+          'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness1 === 1))
+        })}>
+          {finalEffectiveness1 !== 1 && false ? <span className={classnames({
+            'typechart__badge': true,
+            'typechart__badge--super-effective': finalEffectiveness1 > 1,
+            'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
+          })}>{finalEffectiveness1}x</span> : null}
+        </span>
+        <span className={classnames({
+          'typechart__cell': true,
+          'typechart__cell--super-effective': finalEffectiveness1 === 2,
+          'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
+          'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
+          'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
+        })}>
+          {finalEffectiveness1}x
+        </span>
+      </div>
+      : null}
     {selectedTemtems[1] ?
       <div className={classnames({
         'typechart__joint-cell': true,

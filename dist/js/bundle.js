@@ -3799,6 +3799,9 @@ const EFFECTIVENESS = {
     },
 };
 const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
+    const finalEffectivenessCombined = selectedTypes.reduce((effectiveness, selectedType) => {
+        return effectiveness * (EFFECTIVENESS[type][selectedType] || 1);
+    }, 1);
     const finalEffectiveness1 = selectedTemtems[0] ? selectedTemtems[0].types.reduce((effectiveness, temtemType) => effectiveness * (EFFECTIVENESS[type][temtemType] || 1), 1) : 1;
     const finalEffectiveness2 = selectedTemtems[1] ? selectedTemtems[1].types.reduce((effectiveness, temtemType) => effectiveness * (EFFECTIVENESS[type][temtemType] || 1), 1) : 1;
     return React.createElement("div", { className: "typechart__row" },
@@ -3821,30 +3824,58 @@ const TypeChartRow = ({ type, selectedTemtems, selectedTypes }) => {
                 effectiveness,
                 "x");
         }),
-        React.createElement("div", { className: classnames_1.default({
-                'typechart__joint-cell': true,
-                'typechart__heading-cell--dimmed': selectedTypes.length === 0
-            }) },
-            React.createElement("span", { className: classnames_1.default({
-                    'typechart__heading-cell': true,
-                    [`u-type-bgicon--${type.toLowerCase()}`]: true,
-                    'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectiveness1 === 1)
-                }) }, finalEffectiveness1 !== 1 && false ? React.createElement("span", { className: classnames_1.default({
-                    'typechart__badge': true,
-                    'typechart__badge--super-effective': finalEffectiveness1 > 1,
-                    'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
+        selectedTemtems.length === 0 ?
+            React.createElement("div", { className: classnames_1.default({
+                    'typechart__joint-cell': true,
+                    'typechart__heading-cell--dimmed': selectedTypes.length === 0
                 }) },
-                finalEffectiveness1,
-                "x") : null),
-            React.createElement("span", { className: classnames_1.default({
-                    'typechart__cell': true,
-                    'typechart__cell--super-effective': finalEffectiveness1 === 2,
-                    'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
-                    'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
-                    'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
-                }) }, selectedTypes.length > 0
-                ? `${finalEffectiveness1}x`
-                : null)),
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__heading-cell': true,
+                        [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                        'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && finalEffectivenessCombined === 1)
+                    }) }, finalEffectivenessCombined !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                        'typechart__badge': true,
+                        'typechart__badge--super-effective': finalEffectivenessCombined > 1,
+                        'typechart__badge--not-very-effective': finalEffectivenessCombined < 1,
+                    }) },
+                    finalEffectivenessCombined,
+                    "x") : null),
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__cell': true,
+                        'typechart__cell--super-effective': finalEffectivenessCombined === 2,
+                        'typechart__cell--not-very-effective': finalEffectivenessCombined === .5,
+                        'typechart__cell--extra-super-effective': finalEffectivenessCombined === 4,
+                        'typechart__cell--extra-not-very-effective': finalEffectivenessCombined === 0.25,
+                    }) }, selectedTypes.length > 0
+                    ? `${finalEffectivenessCombined}x`
+                    : null))
+            : null,
+        selectedTemtems[0] ?
+            React.createElement("div", { className: classnames_1.default({
+                    'typechart__joint-cell': true,
+                    'typechart__heading-cell--dimmed': selectedTypes.length === 0
+                }) },
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__heading-cell': true,
+                        [`u-type-bgicon--${type.toLowerCase()}`]: true,
+                        'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness1 === 1))
+                    }) }, finalEffectiveness1 !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                        'typechart__badge': true,
+                        'typechart__badge--super-effective': finalEffectiveness1 > 1,
+                        'typechart__badge--not-very-effective': finalEffectiveness1 < 1,
+                    }) },
+                    finalEffectiveness1,
+                    "x") : null),
+                React.createElement("span", { className: classnames_1.default({
+                        'typechart__cell': true,
+                        'typechart__cell--super-effective': finalEffectiveness1 === 2,
+                        'typechart__cell--not-very-effective': finalEffectiveness1 === .5,
+                        'typechart__cell--extra-super-effective': finalEffectiveness1 === 4,
+                        'typechart__cell--extra-not-very-effective': finalEffectiveness1 === 0.25,
+                    }) },
+                    finalEffectiveness1,
+                    "x"))
+            : null,
         selectedTemtems[1] ?
             React.createElement("div", { className: classnames_1.default({
                     'typechart__joint-cell': true,
