@@ -3,7 +3,7 @@ html
   height 100%
 
 body
-  font-family 'Helvetica Neue', Helvetica, Calibri, Arial, sans-serif
+  font-family Calibri, 'Helvetica Neue', Helvetica, Calibri, Arial, sans-serif
   //background #fafafa
   //background #4a4a <- play with this green later, looks good
   background #fafafa
@@ -12,3 +12,42 @@ body
 
 span, li, ul
   display inline-block
+
+$type-colors = {
+  normal: #a1acae,
+  fire: #fb8a6d,
+  water: #7cdcf2,
+  nature: #a0e899,
+  electric: #f2de7c,
+  earth: #bf8b6e,
+  mental: #eb9ddb,
+  wind: #7bdfdb,
+  digital: #83a5a8,
+  melee: #f7b583,
+  crystal: #e95571,
+  toxic: #4a4a4a
+}
+
+$border-color = #2a2a2a
+$super-effective-green = #b0d490
+$extra-super-effective-green = #b0d490 //saturate($super-effective-green, 25)
+$not-very-effective-red = #f4675c
+$extra-not-very-effective-red = #f4675c //saturate($not-very-effective-red, 25)
+
+for type, color in $type-colors
+  .u-type-bgcolor--{type}
+    background color
+    
+for type, color in $type-colors
+  .u-type-bgicon--{type}
+    background color
+    background-image "url(../icons/icon-%s.png)" % unquote(type)
+    background-repeat no-repeat
+    background-position center center
+    color transparent
+    
+.u-flex
+  display flex
+  
+  &--row
+    flex-direction row

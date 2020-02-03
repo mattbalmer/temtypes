@@ -1,0 +1,185 @@
+.typechart-container
+  display inline-flex
+  flex-direction column
+  position relative
+  
+.typechart
+  background $border-color
+  display inline-flex
+  flex-direction column
+  position relative
+    
+  &__row
+    display flex
+    flex-direction row
+
+  &__cell
+    height 46px
+    width 46px
+    margin 3px
+    color $border-color
+    background #fff
+    font-size 14px
+    display flex
+    align-items center
+    justify-content center
+    font-weight 800
+    position relative
+    
+    &--dimmed:after
+      position absolute
+      content ''
+      display block
+      width 100%
+      height 100%
+      background #000
+      opacity .5
+      top 0
+      left 0
+    
+    &--super-effective
+      background $super-effective-green
+      color #fff
+      font-size 16px
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+    &--extra-super-effective
+      background $extra-super-effective-green
+      color #fff
+      font-size 20px
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+    &--not-very-effective
+      background $not-very-effective-red
+      color #fff
+      font-size 16px
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+    &--extra-not-very-effective
+      background $extra-not-very-effective-red
+      color #fff
+      font-size 20px
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+  &__empty-cell
+    height 46px
+    width 46px
+    margin 3px
+    position relative
+    
+  &__heading-cell
+    height 46px
+    width 46px
+    margin 3px
+    cursor pointer
+    position relative
+    
+    &--dimmed:after
+      position absolute
+      content ''
+      display block
+      width 100%
+      height 100%
+      background #000
+      opacity .5
+      top 0
+      left 0
+    
+  &__badge
+    position absolute
+    top 5px
+    left 5px
+    line-height 1
+    font-size 12px
+    padding .5em 1em
+    border-radius 2px
+    
+    &--super-effective
+      background $super-effective-green
+      color #fff
+      font-size 12px
+      border-color darken($super-effective-green, 25)
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+    &--not-very-effective
+      background $not-very-effective-red
+      border-color darken($not-very-effective-red, 25)
+      color #fff
+      font-size 12px
+      text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+
+  &__joint-cell
+    display flex
+    flex-direction row
+    position relative
+
+    &--dimmed:after
+      position absolute
+      content ''
+      display block
+      width 100%
+      height 100%
+      background #000
+      opacity .5
+      top 0
+      left 0
+    
+    span:first-child
+      margin-right 0
+
+    span:last-child
+      margin-left 0
+      width 52px
+      
+  &__horizontal-row-container
+    position relative
+    background $border-color
+    color #fff
+    padding-left 40px
+
+  &__horizontal-label
+    width 100%
+    text-align center
+    font-size 24px
+    background $border-color
+    color #fff
+    height 40px
+    text-align center
+    line-height 40px
+    
+  &__vertical-label
+    position: absolute;
+    top: calc(50%);
+    left: 8px;
+    font-size 24px
+  
+    /* Border is the new background */
+    background: none;
+  
+    /* Rotate from top left corner (not default) */
+    transform-origin: 0 0;
+    transform: rotate(-90deg) translateX(-50%)
