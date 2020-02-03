@@ -1,11 +1,20 @@
 .typeahead
+  position absolute
+  z-index 20
+  top 5px
+  left 5px
+
   input
     border-radius 3px
     outline none
     border 2px solid $border-color
     padding 3px 6px
-    font-size 16px
+    font-size 14px
     line-height 1
+    background #ccc
+
+    &::placeholder
+      font-size 12px
     
   .typeahead__input-wrapper
     position relative
@@ -33,7 +42,8 @@
   &:last-child
     margin-bottom 0
   
-  &:hover
+  &:hover,
+  &--is-selected
     background #ccc
   
   &__portrait-wrapper

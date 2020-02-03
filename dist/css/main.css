@@ -378,6 +378,9 @@ ul {
   width: 46px;
   margin: 3px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .typechart__heading-cell {
   height: 46px;
@@ -470,13 +473,23 @@ ul {
   transform-origin: 0 0;
   transform: rotate(-90deg) translateX(-50%);
 }
+.typeahead {
+  position: absolute;
+  z-index: 20;
+  top: 5px;
+  left: 5px;
+}
 .typeahead input {
   border-radius: 3px;
   outline: none;
   border: 2px solid #2a2a2a;
   padding: 3px 6px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
+  background: #ccc;
+}
+.typeahead input::placeholder {
+  font-size: 12px;
 }
 .typeahead .typeahead__input-wrapper {
   position: relative;
@@ -504,7 +517,8 @@ ul {
 .temtem-display-plate:last-child {
   margin-bottom: 0;
 }
-.temtem-display-plate:hover {
+.temtem-display-plate:hover,
+.temtem-display-plate--is-selected {
   background: #ccc;
 }
 .temtem-display-plate__portrait-wrapper {

@@ -3634,6 +3634,18 @@ exports.AppComponent = react_1.containerize(class extends React.Component {
                 selectedTemtem,
             });
         };
+        this.onReset = () => {
+            this.setState({
+                selectedTemtem: null,
+            });
+        };
+        this.onUnfocusedKeyDown = (e) => {
+            if (e.key === 'Backspace' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                this.onReset();
+            }
+        };
         this.state = {
             selectedTemtem: null,
         };
@@ -3642,7 +3654,13 @@ exports.AppComponent = react_1.containerize(class extends React.Component {
         const { selectedTemtem } = this.state;
         return (React.createElement(React.Fragment, null,
             React.createElement(TemtemTypeaheadComponent_1.TemtemTypeaheadComponent, { onTemtemSelect: this.onSelectTemtem }),
-            React.createElement(TypeChartComponent_1.TypeChartComponent, { allowUserSelection: true, types: selectedTemtem ? selectedTemtem.types : [] })));
+            React.createElement(TypeChartComponent_1.TypeChartComponent, { allowUserSelection: true, types: selectedTemtem ? selectedTemtem.types : [], onReset: this.onReset })));
+    }
+    componentDidMount() {
+        window.addEventListener('keydown', this.onUnfocusedKeyDown);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.onUnfocusedKeyDown);
     }
 });
 
@@ -3660,8 +3678,12 @@ exports.AppComponent = react_1.containerize(class extends React.Component {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
-exports.TemtemDisplayPlateComponent = ({ temtem, onClick }) => {
-    return React.createElement("div", { className: "temtem-display-plate", onClick: onClick ? () => onClick(temtem) : () => { } },
+const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+exports.TemtemDisplayPlateComponent = ({ temtem, onClick, selected }) => {
+    return React.createElement("div", { className: classnames_1.default({
+            "temtem-display-plate": true,
+            "temtem-display-plate--is-selected": selected,
+        }), onClick: onClick ? () => onClick(temtem) : () => { } },
         React.createElement("div", { className: "temtem-display-plate__portrait-wrapper" },
             React.createElement("img", { className: "temtem-display-plate__portrait", src: temtem.portraitWikiUrl })),
         React.createElement("div", { className: "temtem-display-plate__info" },
@@ -3693,30 +3715,103 @@ const returnValidTemtems = (temtems, query) => {
     return temtems
         .filter(temtem => temtem.name.toUpperCase().includes(query) || temtem.types.some(type => type.includes(query)));
 };
-exports.TemtemTypeaheadComponent = ({ onTemtemSelect }) => {
-    const inputRef = React.createRef();
-    const [query, updateQuery] = React.useState('');
-    const suggestions = returnValidTemtems(temtems_1.default, query);
-    const onSubmit = (e) => {
-        e.preventDefault();
-    };
-    const onSelect = (temtem) => {
-        onTemtemSelect(temtem);
-        updateQuery('');
-    };
-    return (React.createElement("div", { className: "typeahead" },
-        React.createElement("form", { onSubmit: onSubmit },
-            React.createElement("div", { className: "typeahead__input-wrapper" },
-                React.createElement("input", { type: "text", onChange: (e) => updateQuery(e.target.value), value: query }),
-                query ?
-                    React.createElement("div", { className: "typeahead__suggestions" },
-                        suggestions.slice(0, 5).map(_ => React.createElement(TemtemDisplayPlateComponent_1.TemtemDisplayPlateComponent, { key: _.number, temtem: _, onClick: onSelect })),
-                        suggestions.length > 5 ? React.createElement("span", null,
-                            "+ ",
-                            suggestions.length - 5,
-                            " more!") : null)
-                    : null))));
-};
+class TemtemTypeaheadComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onSubmit = (e) => {
+            e.preventDefault();
+        };
+        this.onSelect = (temtem) => {
+            this.props.onTemtemSelect(temtem);
+            this.setState({
+                query: '',
+                suggestions: returnValidTemtems(temtems_1.default, ''),
+                selection: -1,
+            });
+        };
+        this.onInputChange = (e) => {
+            const query = e.target.value;
+            this.setState({
+                query,
+                suggestions: returnValidTemtems(temtems_1.default, query),
+            });
+        };
+        this.onFocusedKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                this.setState({
+                    query: '',
+                    selection: -1,
+                    suggestions: returnValidTemtems(temtems_1.default, ''),
+                });
+                this.inputRef.current.blur();
+            }
+            if (e.key === 'ArrowUp') {
+                this.setState({
+                    selection: Math.max(-1, this.state.selection - 1),
+                });
+            }
+            if (e.key === 'ArrowDown') {
+                this.setState({
+                    selection: Math.min(this.state.suggestions.length - 1, this.state.selection + 1),
+                });
+            }
+            if (e.key === 'Enter' && this.state.selection > -1) {
+                this.onSelect(this.state.suggestions[this.state.selection]);
+            }
+        };
+        this.onUnfocusedKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                this.inputRef.current.focus();
+            }
+            if (e.key === 'Escape') {
+                this.setState({
+                    query: '',
+                    selection: -1,
+                    suggestions: returnValidTemtems(temtems_1.default, ''),
+                });
+            }
+        };
+        this.onFocus = () => {
+            window.addEventListener('keydown', this.onFocusedKeyDown);
+            window.removeEventListener('keydown', this.onUnfocusedKeyDown);
+        };
+        this.onBlur = () => {
+            window.removeEventListener('keydown', this.onFocusedKeyDown);
+            window.addEventListener('keydown', this.onUnfocusedKeyDown);
+        };
+        this.state = {
+            query: '',
+            selection: -1,
+            suggestions: [],
+        };
+    }
+    componentDidMount() {
+        window.addEventListener('keydown', this.onUnfocusedKeyDown);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.onUnfocusedKeyDown);
+    }
+    render() {
+        this.inputRef = React.createRef();
+        const { query, selection } = this.state;
+        const suggestions = returnValidTemtems(temtems_1.default, query);
+        console.log('render', query, selection);
+        return (React.createElement("div", { className: "typeahead" },
+            React.createElement("form", { onSubmit: this.onSubmit },
+                React.createElement("div", { className: "typeahead__input-wrapper" },
+                    React.createElement("input", { type: "text", onChange: this.onInputChange, value: query, ref: this.inputRef, onFocus: this.onFocus, onBlur: this.onBlur }),
+                    query ?
+                        React.createElement("div", { className: "typeahead__suggestions" },
+                            suggestions.slice(0, 5).map((temtem, i) => React.createElement(TemtemDisplayPlateComponent_1.TemtemDisplayPlateComponent, { key: temtem.number, temtem: temtem, onClick: this.onSelect, selected: i === selection })),
+                            suggestions.length === 0 ? React.createElement("span", null, "No temtem found") : null,
+                            suggestions.length > 5 ? React.createElement("span", null,
+                                "+ ",
+                                suggestions.length - 5,
+                                " more!") : null)
+                        : null))));
+    }
+}
+exports.TemtemTypeaheadComponent = TemtemTypeaheadComponent;
 
 
 /***/ }),
@@ -3733,6 +3828,7 @@ exports.TemtemTypeaheadComponent = ({ onTemtemSelect }) => {
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 const classnames_1 = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+const ResetIcon_1 = __webpack_require__(/*! @client/components/icons/ResetIcon */ "./source/js/components/icons/ResetIcon.tsx");
 var TYPE;
 (function (TYPE) {
     TYPE["NORMAL"] = "NORMAL";
@@ -3748,7 +3844,6 @@ var TYPE;
     TYPE["CRYSTAL"] = "CRYSTAL";
     TYPE["TOXIC"] = "TOXIC";
 })(TYPE || (TYPE = {}));
-;
 const TYPTE_LIST = [
     'NORMAL',
     'FIRE',
@@ -3882,15 +3977,13 @@ const TypeChartRow = ({ type, selectedTypes }) => {
                     'typechart__heading-cell': true,
                     [`u-type-bgicon--${type.toLowerCase()}`]: true,
                     'typechart__heading-cell--dimmed': (selectedTypes.length > 0 && (finalEffectiveness === 1))
+                }) }, finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
+                    'typechart__badge': true,
+                    'typechart__badge--super-effective': finalEffectiveness > 1,
+                    'typechart__badge--not-very-effective': finalEffectiveness < 1,
                 }) },
-                finalEffectiveness !== 1 && false ? React.createElement("span", { className: classnames_1.default({
-                        'typechart__badge': true,
-                        'typechart__badge--super-effective': finalEffectiveness > 1,
-                        'typechart__badge--not-very-effective': finalEffectiveness < 1,
-                    }) },
-                    finalEffectiveness,
-                    "x") : null,
-                type),
+                finalEffectiveness,
+                "x") : null),
             React.createElement("span", { className: classnames_1.default({
                     'typechart__cell': true,
                     'typechart__cell--super-effective': finalEffectiveness === 2,
@@ -3901,7 +3994,7 @@ const TypeChartRow = ({ type, selectedTypes }) => {
                 ? `${finalEffectiveness}x`
                 : null)));
 };
-exports.TypeChartComponent = ({ allowUserSelection, types }) => {
+exports.TypeChartComponent = ({ allowUserSelection, types, onReset }) => {
     const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
         ? React.useState(types)
         : [types, (...args) => { }];
@@ -3917,12 +4010,13 @@ exports.TypeChartComponent = ({ allowUserSelection, types }) => {
                     'typechart--has-selected-types': selectedTypes.length > 0,
                 }) },
                 React.createElement("div", { className: "typechart__row" },
-                    React.createElement("span", { className: "typechart__empty-cell" }),
+                    React.createElement("span", { className: "typechart__empty-cell" },
+                        React.createElement("div", { style: { cursor: selectedTypes.length > 0 ? 'pointer' : 'auto' }, onClick: onReset },
+                            React.createElement(ResetIcon_1.ResetIcon, { size: 36, color: selectedTypes.length > 0 ? '#ccc' : '#444' }))),
                     TYPTE_LIST.map(type => React.createElement("span", { key: type, className: classnames_1.default({
                             'typechart__heading-cell': true,
                             [`u-type-bgicon--${type.toLowerCase()}`]: true,
                         }), onClick: () => {
-                            console.log('cloick', type);
                             if (selectedTypes.includes(type)) {
                                 setSelectedTypes(selectedTypes.filter(_ => _ !== type));
                             }
@@ -3935,6 +4029,27 @@ exports.TypeChartComponent = ({ allowUserSelection, types }) => {
                         React.createElement("span", { className: "typechart__empty-cell" }))),
                 React.createElement("div", null, TYPTE_LIST.map(type => React.createElement(TypeChartRow, { key: type, type: type, selectedTypes: selectedTypes }))))));
 };
+
+
+/***/ }),
+
+/***/ "./source/js/components/icons/ResetIcon.tsx":
+/*!**************************************************!*\
+  !*** ./source/js/components/icons/ResetIcon.tsx ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+exports.ResetIcon = ({ size, color }) => React.createElement("svg", { className: 'icon icon-reset', version: "1.1", viewBox: "0 0 512 512", width: `${size}px`, height: `${size}px` },
+    React.createElement("g", { id: "Layer_1" }),
+    React.createElement("g", { id: "Layer_2" },
+        React.createElement("g", null,
+            React.createElement("path", { style: { fill: color }, d: "M274.91,47.78c-97.6,0-179.71,67.5-202.15,158.26L58.79,181.4c-4.36-7.69-14.12-10.39-21.81-6.03    c-7.69,4.36-10.39,14.12-6.03,21.81l37.66,66.44c0,0,0,0.01,0.01,0.01l0.15,0.26c0.19,0.34,0.39,0.66,0.6,0.98    c0.01,0.01,0.02,0.03,0.03,0.04c0.04,0.07,0.09,0.13,0.14,0.19c0.23,0.33,0.46,0.64,0.71,0.95c0.04,0.05,0.07,0.1,0.11,0.15    c0,0,0,0.01,0.01,0.01c0.02,0.02,0.04,0.04,0.06,0.07c0.36,0.44,0.75,0.85,1.15,1.24c0.04,0.04,0.07,0.07,0.11,0.1    c0.25,0.23,0.5,0.46,0.76,0.67c0.05,0.04,0.1,0.08,0.15,0.12c0.35,0.28,0.71,0.55,1.08,0.81c0.03,0.02,0.06,0.04,0.09,0.06    c0.17,0.11,0.35,0.22,0.52,0.33c0.09,0.06,0.18,0.11,0.28,0.17c0.12,0.07,0.25,0.14,0.38,0.21c0.11,0.06,0.22,0.12,0.33,0.17    c0.2,0.1,0.39,0.2,0.59,0.3c0.11,0.05,0.22,0.1,0.33,0.15c0,0,0.01,0,0.01,0.01c0.12,0.05,0.24,0.11,0.36,0.16    c0.33,0.14,0.66,0.26,1,0.37c0.04,0.02,0.09,0.03,0.13,0.04c0.02,0.01,0.03,0.01,0.05,0.02c0.15,0.05,0.31,0.09,0.47,0.14    c0.29,0.09,0.59,0.16,0.89,0.23c0.08,0.02,0.15,0.04,0.23,0.06c0.07,0.02,0.14,0.03,0.22,0.05c0.44,0.09,0.89,0.15,1.33,0.2    c0.04,0,0.07,0.01,0.11,0.02c0.08,0.01,0.15,0.01,0.23,0.02c0.49,0.05,0.98,0.08,1.48,0.08c0.42,0,0.84-0.02,1.26-0.06    c0.07-0.01,0.14-0.01,0.21-0.02c0.01,0,0.03,0,0.04,0c0.06-0.01,0.12-0.01,0.19-0.02c0.28-0.03,0.55-0.07,0.83-0.11    c0.08-0.01,0.16-0.02,0.24-0.04c0.13-0.02,0.25-0.04,0.38-0.07c0.06-0.01,0.12-0.03,0.19-0.04c0.4-0.09,0.81-0.19,1.21-0.31    c0.1-0.03,0.2-0.06,0.3-0.09c0.11-0.03,0.21-0.07,0.32-0.11c0.14-0.05,0.28-0.1,0.42-0.15c0.17-0.06,0.33-0.12,0.5-0.19    c0.1-0.04,0.2-0.09,0.3-0.13c0.13-0.06,0.26-0.12,0.39-0.18c0.19-0.09,0.37-0.19,0.56-0.28c0.13-0.07,0.25-0.13,0.38-0.2    c0.28-0.15,0.55-0.33,0.82-0.5c0.15-0.09,0.3-0.18,0.45-0.28c0.06-0.04,0.11-0.08,0.17-0.12c0.17-0.12,0.34-0.25,0.5-0.38    c0.06-0.04,0.12-0.09,0.18-0.13c0.11-0.09,0.23-0.17,0.34-0.26c0,0,0.01-0.01,0.01-0.01l59.04-48.93    c6.8-5.64,7.75-15.72,2.11-22.53c-5.64-6.8-15.73-7.75-22.53-2.11l-28.84,23.9c17.18-79.28,87.87-138.87,172.22-138.87    c97.17,0,176.22,79.05,176.22,176.22s-79.05,176.22-176.22,176.22c-8.84,0-16,7.16-16,16s7.16,16,16,16    c114.81,0,208.22-93.41,208.22-208.22S389.72,47.78,274.91,47.78z" }),
+            React.createElement("path", { style: { fill: color }, d: "M274.91,147.61c-8.84,0-16,7.16-16,16V256c0,8.84,7.16,16,16,16h75.87c8.84,0,16-7.16,16-16s-7.16-16-16-16    h-59.87v-76.39C290.91,154.77,283.74,147.61,274.91,147.61z" }))));
 
 
 /***/ }),
@@ -3970,6 +4085,7 @@ exports.default = temtems_raw_1.default.map(temtem => ({
     name: temtem.name,
     types: temtem.types.map(_ => _.toUpperCase()),
     portraitWikiUrl: temtem.portraitWikiUrl,
+    wikiUrl: temtem.wikiUrl,
 }));
 
 

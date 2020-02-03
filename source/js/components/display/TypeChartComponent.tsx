@@ -1,5 +1,6 @@
 import * as React from 'react';
 import classnames from 'classnames';
+import { ResetIcon } from '@client/components/icons/ResetIcon';
 
 enum TYPE {
   NORMAL = 'NORMAL',
@@ -14,7 +15,7 @@ enum TYPE {
   MELEE = 'MELEE',
   CRYSTAL = 'CRYSTAL',
   TOXIC = 'TOXIC',
-};
+}
 
 const TYPTE_LIST = [
   'NORMAL',
@@ -177,7 +178,6 @@ const TypeChartRow = ({ type, selectedTypes }) => {
           'typechart__badge--super-effective': finalEffectiveness > 1,
           'typechart__badge--not-very-effective': finalEffectiveness < 1,
         })}>{finalEffectiveness}x</span> : null}
-        {type}
       </span>
       <span className={classnames({
         'typechart__cell': true,
@@ -193,9 +193,9 @@ const TypeChartRow = ({ type, selectedTypes }) => {
       </span>
     </div>
   </div>
-}
+};
 
-export const TypeChartComponent = ({ allowUserSelection, types }) => {
+export const TypeChartComponent = ({ allowUserSelection, types, onReset }) => {
   const [selectedTypes, setSelectedTypes] = (allowUserSelection !== undefined ? (allowUserSelection) : true)
     ? React.useState(types)
     : [types, (...args) => {}];
@@ -213,7 +213,14 @@ export const TypeChartComponent = ({ allowUserSelection, types }) => {
         'typechart--has-selected-types': selectedTypes.length > 0,
       })}>
         <div className="typechart__row">
-          <span className="typechart__empty-cell"></span>
+          <span className="typechart__empty-cell">
+            <div style={{cursor: selectedTypes.length > 0 ? 'pointer' : 'auto'}} onClick={onReset}>
+              <ResetIcon
+                size={36}
+                color={selectedTypes.length > 0 ? '#ccc' : '#444'}
+              />
+            </div>
+          </span>
           {TYPTE_LIST.map(type => 
             <span 
               key={type} 
@@ -222,7 +229,6 @@ export const TypeChartComponent = ({ allowUserSelection, types }) => {
                 [`u-type-bgicon--${type.toLowerCase()}`]: true,
               })}
               onClick={() => {
-                console.log('cloick', type);
                 if(selectedTypes.includes(type)) {
                   setSelectedTypes(selectedTypes.filter(_ => _ !== type))
                 } else if(selectedTypes.length < 2) {

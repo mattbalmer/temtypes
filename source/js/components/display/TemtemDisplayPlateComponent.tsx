@@ -1,8 +1,11 @@
 import * as React from 'react';
 import classnames from 'classnames';
 
-export const TemtemDisplayPlateComponent = ({ temtem, onClick }) => {
-  return <div className="temtem-display-plate" onClick={onClick ? () => onClick(temtem) : () => {}}>
+export const TemtemDisplayPlateComponent = ({ temtem, onClick, selected }) => {
+  return <div className={classnames({
+    "temtem-display-plate": true,
+    "temtem-display-plate--is-selected": selected,
+  })} onClick={onClick ? () => onClick(temtem) : () => {}}>
     <div className="temtem-display-plate__portrait-wrapper">
       <img className="temtem-display-plate__portrait" src={temtem.portraitWikiUrl} />
     </div>
